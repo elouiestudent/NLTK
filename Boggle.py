@@ -141,25 +141,29 @@ def findWords(root, board, adjacent, size):
     v = {(i, j):False for i, j in adjacent}
     for r, c in adjacent:
         v[r, c] = True
-        words = words.union(recurseWords(root, "", r, c, board, adjacent, v, length))
+        temp = TrieNode("")
+        for j in root.children:
+            if j.data == board[r][c]:
+                temp = j
+        words = words.union(recurseWords(temp, board[r][c], r, c, board, adjacent, v, length))
         v[r, c] = False
     return words
 
 def recurseWords(node, str, row, col, board, adjacent, visited, l):
     s = set()
     c = adjacent[row, col]
-    print("c:", c)
-    print("nodeval:", node.data)
-    print("adjacent chars:", [board[k][h] for k, h in adjacent[row, col]])
+    # print("c:", c)
+    # print("nodeval:", node.data)
+    # print("adjacent chars:", [board[k][h] for k, h in adjacent[row, col]])
     for k in node.children:
         # print("row:", row, "col:", col)
         # print("c:", c)
         for i, j in c:
             if k.data == board[i][j] and not visited[(i, j)]:
-                print("str added:", str + k.data)
-                print("k.isLeaf:", k.isLeaf)
-                print("k.data:", k.data)
-                print("children:", {n.data for n in node.children})
+                # print("str added:", str + k.data)
+                # print("k.isLeaf:", k.isLeaf)
+                # print("k.data:", k.data)
+                # print("children:", {n.data for n in node.children})
                 if k.isLeaf and len(str + k.data) >= l:
                     s.add(str + k.data)
                 print("s:", s)

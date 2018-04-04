@@ -89,8 +89,7 @@ def recurseWords(node, str, row, col, board, adjacent, visited, l):
     for k in node.children:
         for i, j in c:
             if k.data == board[i][j] and not visited[(i, j)]:
-                if k.isLeaf and len(str + k.data) >= l:
-                    s.add(str + k.data)
+                if k.isLeaf and len(str + k.data) >= l: s.add(str + k.data)
                 visited[(i, j)] = True
                 s = s.union(recurseWords(k, str + k.data, i, j, board, adjacent, visited, l))
                 visited[(i, j)] = False

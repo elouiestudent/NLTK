@@ -17,11 +17,10 @@ def readIn(str):
     row, count = 0, 0
     while count < len(str):
         if str[count] in "123456789":
-            b.append(str[count + 1: count + 1 + int(str[count])])
+            b.append(str[count + 1: count + 1 + int(str[count])].lower())
             count = count + 1 + int(str[count])
         else:
-            if str[count] == "_": b.append(" ")
-            else: b.append(str[count])
+            b.append(str[count].lower())
             count += 1
     s = int(math.pow(len(b), 0.5))
     board = {i:[] for i in range(s)}
@@ -72,13 +71,14 @@ def findWords(root, board, adjacent, size):
     words = set()
     length = 0
     if size == 4: length = 3
-    elif size > 4: length = size - 1
+    elif size > 4: length = 4
     v = {(i, j):False for i, j in adjacent}
     for r, c in adjacent:
         v[r, c] = True
-        temp = TrieNode("")
-        for j in root.children:
-            if j.data == board[r][c]: temp = j
+        temp = root
+        for ch in board[r][c]:
+            for j in temp.children:
+                if j.data == ch: temp = j
         words = words.union(recurseWords(temp, board[r][c], r, c, board, adjacent, v, length))
         v[r, c] = False
     return words
@@ -88,15 +88,34 @@ def recurseWords(node, str, row, col, board, adjacent, visited, l):
     c = adjacent[row, col]
     for k in node.children:
         for i, j in c:
-            if k.data == board[i][j] and not visited[(i, j)]:
-                if k.isLeaf and len(str + k.data) >= l: s.add(str + k.data)
-                visited[(i, j)] = True
-                s = s.union(recurseWords(k, str + k.data, i, j, board, adjacent, visited, l))
-                visited[(i, j)] = False
+            if not visited[i, j] and board[i][j] != "_":
+                if len(board[i][j]) == 1:
+                    if k.data == board[i][j]:
+                        if k.isLeaf and len(str + k.data) >= l: s.add(str + k.data)
+                        visited[(i, j)] = True
+                        s = s.union(recurseWords(k, str + k.data, i, j, board, adjacent, visited, l))
+                        visited[(i, j)] = False
+                else:
+                    block = board[i][j]
+                    temp = node
+                    seg = ""
+                    for ch in block:
+                        for h in temp.children:
+                            if h.data == ch:
+                                temp = h
+                                seg += ch
+                    if seg == board[i][j]:
+                        visited[(i, j)] = True
+                        s = s.union(recurseWords(temp, str + seg , i, j, board, adjacent, visited, l))
+                        visited[(i, j)] = False
     return s
 
-dictionary = [line.rstrip() for line in open("wordss.txt")]
-board, size = readIn("wdvisscaieunsdmfascnefsei")
+inp = sys.argv[1]
+dictionary = [line.rstrip().lower() for line in open("scrabble.txt")]
+board, size = readIn(inp)
+print("board: \n")
+for i in board:
+    print(board[i])
 adjacent = createAdjacent(size)
 root = createTrie(dictionary)
 words = findWords(root, board, adjacent, size)

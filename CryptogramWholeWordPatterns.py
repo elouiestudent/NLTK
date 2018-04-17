@@ -167,8 +167,7 @@ def addPoss(word, pattern, patToDict):
         # print("TSOPOSWORDS:", possWords)
     for i in range(len(word)):
         for wp in possWords:
-            if word[i] != wp[i]:
-                match[word[i]].add(wp[i])
+            match[word[i]].add(wp[i])
     return match
 
 def combine(dict1, dict2):
